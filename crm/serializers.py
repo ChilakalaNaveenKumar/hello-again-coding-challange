@@ -3,14 +3,17 @@ from .models import Address, AppUser, CustomerRelationship
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
+        model = Address
         fields = '__all__'
     
 class CustomerRelationshipSerializer(serializers.ModelSerializer):
     class Meta:
+        model = CustomerRelationship
         fields = '__all__'
 
 class AppUserSerializer(serializers.ModelSerializer):
     class Meta:
+        model = AppUser
         fields = '__all__'
     
     def get_customerrelationship(self, obj):
