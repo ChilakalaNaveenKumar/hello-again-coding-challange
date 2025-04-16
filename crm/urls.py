@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import AppUserListView, AppUserFullListView
+from .views import AppUserListView, OptimizedAppUserListView
 
 urlpatterns = [
     path('users/', AppUserListView.as_view(), name='user-list'),
-    path('users-full/', AppUserFullListView.as_view(), name='user-full-list'),
+    path('optimized-users/', OptimizedAppUserListView.as_view(), name='optimized-users'),
 ]

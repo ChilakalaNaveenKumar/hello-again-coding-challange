@@ -2,52 +2,29 @@ import time
 import requests
 
 API_ENDPOINTS = [
-    # Unoptimized View
+    ("Optimized - Paginated Page 1", "http://127.0.0.1:8000/api/optimized-users/?page=1"),
+    ("Optimized - Filter Gender Male", "http://127.0.0.1:8000/api/optimized-users/?gender=M"),
+    ("Optimized - Filter Customer ID", "http://127.0.0.1:8000/api/optimized-users/?customer_id=abc-123"),
+    ("Optimized - Birthday After 1980", "http://127.0.0.1:8000/api/optimized-users/?birthday_after=1980-01-01"),
+    ("Optimized - Birthday Between", "http://127.0.0.1:8000/api/optimized-users/?birthday_after=1980-01-01&birthday_before=2000-01-01"),
+    ("Optimized - Filter City", "http://127.0.0.1:8000/api/optimized-users/?address__city=Berlin"),
+    ("Optimized - Filter Country", "http://127.0.0.1:8000/api/optimized-users/?address__country=Germany"),
+    ("Optimized - Points Greater Than 1000", "http://127.0.0.1:8000/api/optimized-users/?customerrelationship__points__gte=1000"),
+    ("Optimized - Last Activity After 2023", "http://127.0.0.1:8000/api/optimized-users/?customerrelationship__last_activity_after=2023-01-01"),
+    ("Optimized - Order by First Name", "http://127.0.0.1:8000/api/optimized-users/?ordering=first_name"),
+    ("Optimized - Order by City", "http://127.0.0.1:8000/api/optimized-users/?ordering=address__city"),
+    ("Optimized - Order by Points", "http://127.0.0.1:8000/api/optimized-users/?ordering=customerrelationship__points"),
     ("Unoptimized - Paginated Page 1", "http://127.0.0.1:8000/api/users/?page=1"),
-    ("Unoptimized - Full Response (100k)", "http://127.0.0.1:8000/api/users/?page_size=100000"),
-    ("Unoptimized - Search 'john'", "http://127.0.0.1:8000/api/users/?search=john"),
-    
-    # AppUser filters/sorting
-    ("Unoptimized - Filter gender", "http://127.0.0.1:8000/api/users/?gender=M"),
-    ("Unoptimized - Filter birthday", "http://127.0.0.1:8000/api/users/?birthday=2000-01-01"),
-    ("Unoptimized - Filter customer_id", "http://127.0.0.1:8000/api/users/?customer_id=abc-123"),
-    ("Unoptimized - Order by first_name", "http://127.0.0.1:8000/api/users/?ordering=first_name"),
-    ("Unoptimized - Order by last_name", "http://127.0.0.1:8000/api/users/?ordering=last_name"),
-    ("Unoptimized - Order by birthday", "http://127.0.0.1:8000/api/users/?ordering=birthday"),
-
-    # Address filters/sorting
-    ("Unoptimized - Filter address__city", "http://127.0.0.1:8000/api/users/?address__city=Berlin"),
-    ("Unoptimized - Filter address__country", "http://127.0.0.1:8000/api/users/?address__country=Germany"),
-    ("Unoptimized - Order by address__city", "http://127.0.0.1:8000/api/users/?ordering=address__city"),
-
-    # CustomerRelationship filters/sorting
-    ("Unoptimized - Filter customerrelationship__points", "http://127.0.0.1:8000/api/users/?customerrelationship__points=100"),
-    ("Unoptimized - Order by customerrelationship__points", "http://127.0.0.1:8000/api/users/?ordering=customerrelationship__points"),
-
-    # FullField View
-    ("FullField - Paginated Page 1", "http://127.0.0.1:8000/api/users-full/?page=1"),
-    ("FullField - Full Response (100k)", "http://127.0.0.1:8000/api/users-full/?page_size=100000"),
-    ("FullField - Search 'john'", "http://127.0.0.1:8000/api/users-full/?search=john"),
-
-    # AppUser filters/sorting
-    ("FullField - Filter gender", "http://127.0.0.1:8000/api/users-full/?gender=M"),
-    ("FullField - Filter birthday", "http://127.0.0.1:8000/api/users-full/?birthday=2000-01-01"),
-    ("FullField - Filter customer_id", "http://127.0.0.1:8000/api/users-full/?customer_id=abc-123"),
-    ("FullField - Order by first_name", "http://127.0.0.1:8000/api/users-full/?ordering=first_name"),
-    ("FullField - Order by last_name", "http://127.0.0.1:8000/api/users-full/?ordering=last_name"),
-    ("FullField - Order by birthday", "http://127.0.0.1:8000/api/users-full/?ordering=birthday"),
-
-    # Address filters/sorting
-    ("FullField - Filter address__city", "http://127.0.0.1:8000/api/users-full/?address__city=Berlin"),
-    ("FullField - Filter address__country", "http://127.0.0.1:8000/api/users-full/?address__country=Germany"),
-    ("FullField - Order by address__city", "http://127.0.0.1:8000/api/users-full/?ordering=address__city"),
-
-    # CustomerRelationship filters/sorting
-    ("FullField - Filter customerrelationship__points", "http://127.0.0.1:8000/api/users-full/?customerrelationship__points=100"),
-    ("FullField - Order by customerrelationship__points", "http://127.0.0.1:8000/api/users-full/?ordering=customerrelationship__points"),
-
-    # Optional: No pagination at all
-    ("FullField - No Pagination", "http://127.0.0.1:8000/api/users-full/")
+    ("Unoptimized - Filter Gender Male", "http://127.0.0.1:8000/api/users/?gender=M"),
+    ("Unoptimized - Filter Customer ID", "http://127.0.0.1:8000/api/users/?customer_id=abc-123"),
+    ("Unoptimized - Filter Birthday", "http://127.0.0.1:8000/api/users/?birthday=2000-01-01"),
+    ("Unoptimized - Filter City", "http://127.0.0.1:8000/api/users/?address__city=Berlin"),
+    ("Unoptimized - Filter Country", "http://127.0.0.1:8000/api/users/?address__country=Germany"),
+    ("Unoptimized - Filter Points", "http://127.0.0.1:8000/api/users/?customerrelationship__points=1000"),
+    ("Unoptimized - Filter Last Activity", "http://127.0.0.1:8000/api/users/?customerrelationship__last_activity=2023-01-01"),
+    ("Unoptimized - Order by First Name", "http://127.0.0.1:8000/api/users/?ordering=first_name"),
+    ("Unoptimized - Order by City", "http://127.0.0.1:8000/api/users/?ordering=address__city"),
+    ("Unoptimized - Order by Points", "http://127.0.0.1:8000/api/users/?ordering=customerrelationship__points"),
 ]
 
 
