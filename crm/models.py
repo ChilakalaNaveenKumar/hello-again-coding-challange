@@ -66,7 +66,7 @@ class OptimizedAppUser(models.Model):
     created = models.DateTimeField(auto_now_add=True, db_index=True)
     birthday = models.DateField(db_index=True)
     last_updated = models.DateTimeField(auto_now=True, db_index=True)
-    address = models.ForeignKey(OptimizedAddress, on_delete=models.CASCADE, db_index=True)
+    address = models.ForeignKey(OptimizedAddress, related_name="users", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -76,7 +76,7 @@ class OptimizedCustomerRelationship(models.Model):
     points = models.IntegerField(db_index=True)
     created = models.DateTimeField(auto_now_add=True, db_index=True)
     last_activity = models.DateTimeField(auto_now=True, db_index=True)
-    appuser = models.ForeignKey(OptimizedAppUser, on_delete=models.CASCADE)
+    appuser = models.ForeignKey(OptimizedAppUser, related_name="customerrelationship", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.appuser} {self.points} pts"

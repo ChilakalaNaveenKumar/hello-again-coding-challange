@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Address, AppUser, CustomerRelationship
+from .models import Address, AppUser, CustomerRelationship, OptimizedAppUser
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,3 +22,18 @@ class AppUserSerializer(serializers.ModelSerializer):
             return CustomerRelationshipSerializer(rel).data
         except CustomerRelationship.DoesNotExist:
             return None
+
+class OptimizedAppUserSerializer(serializers.ModelSerializer):
+    address_city = serializers.CharField(source='address.city')
+    address_country = serializers.CharField(source='address.country')
+    points = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OptimizedAppUser
+        fields = ['id','customer_id', 'first_name', 'last_name', 'gender', 'birthday', 'phone_number', 'address_city', 'address_country', 'points']
+
+    def get_points(self, obj):
+        rel = getattr(obj, 'customerrelationship', [])
+        if rel:
+            return rel[0].points  # assuming 1-1
+        return None
