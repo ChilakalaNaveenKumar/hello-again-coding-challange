@@ -1,0 +1,12 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Installer logs
+pip-log.txt
+
+
+# Environments - Ignoring your 'env' directory
+env/
+
+# VSCode settings/cache (Optional, if you use VS Code)
+.vscode/
