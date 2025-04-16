@@ -10,3 +10,6 @@ env/
 
 # VSCode settings/cache (Optional, if you use VS Code)
 .vscode/
+
+#ignore sqlite3
+db.sqlite3
