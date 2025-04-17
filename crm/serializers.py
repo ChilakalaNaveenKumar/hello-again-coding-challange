@@ -33,7 +33,9 @@ class OptimizedAppUserSerializer(serializers.ModelSerializer):
         fields = ['id','customer_id', 'first_name', 'last_name', 'gender', 'birthday', 'phone_number', 'address_city', 'address_country', 'points']
 
     def get_points(self, obj):
-        rel = getattr(obj, 'customerrelationship', [])
-        if rel:
-            return rel[0].points  # assuming 1-1
+        rel_qs = getattr(obj, 'customerrelationship', None)
+        if rel_qs:
+            rel = rel_qs.first()
+            if rel:
+                return rel.points
         return None
