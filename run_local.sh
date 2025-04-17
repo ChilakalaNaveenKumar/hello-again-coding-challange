@@ -1,4 +1,14 @@
 #!/bin/bash
+echo "Checking if port 8000 is already in use..."
+PID=$(lsof -ti:8000)
+
+if [ -n "$PID" ]; then
+  echo "Port 8000 in use. Killing process $PID..."
+  kill -9 $PID
+  sleep 1
+else
+  echo "Port 8000 is free."
+fi
 
 echo "Setting up Python virtual environment"
 python3 -m venv env
@@ -25,7 +35,26 @@ else
   echo "Data already exists ($DATA_COUNT records). Skipping generation."
 fi
 
-
-
 echo "Starting development server"
-python manage.py runserver
+python manage.py runserver &
+
+# Move to frontend project and start Vite dev server
+echo "Switching to frontend dashboard"
+cd django_performance_dashboard || exit 1
+
+echo "Trying to load nvm if available"
+export NVM_DIR="$HOME/.nvm"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  . "$NVM_DIR/nvm.sh"
+  echo "nvm loaded"
+  nvm use 22 || echo "Node v22 not found via nvm, continuing with system node"
+else
+  echo "nvm not found, using system node"
+fi
+
+echo "Installing frontend dependencies"
+npm install
+
+echo "Starting Vite development server"
+npm run dev
+
