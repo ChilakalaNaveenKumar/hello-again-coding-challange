@@ -52,10 +52,10 @@ jobs:
 
     - name: Start Cloudflare Tunnel
       run: |
-        nohup cloudflared tunnel --config config.yml run hello-again-backend > tunnel.log 2>&1 &
+        nohup cloudflared tunnel --config config.yml run > tunnel.log 2>&1 &
         sleep 5
-        echo "✅ Backend exposed at https://api.digi-setu.com"
-        echo "🪵 Tunnel logs:"
+        echo "Backend exposed at https://api.digi-setu.com"
+        echo "Tunnel logs:"
         cat tunnel.log || echo "No logs found"
 
     - name: Keep workflow alive for testing
