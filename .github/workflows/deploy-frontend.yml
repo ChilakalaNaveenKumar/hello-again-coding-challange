@@ -18,8 +18,11 @@ jobs:
       with:
         node-version: 18
 
-    - name: Install dependencies
-      run: npm install
+    - name: Install frontend dependencies
+      run: |
+        cd django_performance_dashboard
+        npm install
+      
 
     - name: Build Vue app
       run: npm run build
@@ -28,4 +31,4 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist
+        publish_dir: ./django_performance_dashboard/dist
