@@ -38,8 +38,9 @@ jobs:
         chmod +x cloudflared
         sudo mv cloudflared /usr/local/bin/cloudflared
 
-    - name: Write tunnel credentials
-      run: echo "${{ secrets.CLOUDFLARED_CRED_JSON }}" > tunnel.json
+    - name: Write tunnel credentials safely
+      run: |
+        echo "${{ secrets.CLOUDFLARED_CRED_JSON }}" | jq '.' > tunnel.json
 
     - name: Create Cloudflare Tunnel config
       run: |
@@ -54,8 +55,8 @@ jobs:
       run: |
         nohup cloudflared tunnel --config config.yml run > tunnel.log 2>&1 &
         sleep 5
-        echo "Backend exposed at https://api.digi-setu.com"
-        echo "Tunnel logs:"
+        echo "✅ Backend exposed at https://api.digi-setu.com"
+        echo "🪵 Tunnel logs:"
         cat tunnel.log || echo "No logs found"
 
     - name: Keep workflow alive for testing
