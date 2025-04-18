@@ -1,0 +1,39 @@
+name: Run Local Script and Expose with Ngrok
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  run-local:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.10
+
+    - name: Make script executable
+      run: chmod +x ./run_local.sh
+
+    - name: Run backend setup (without starting server)
+      run: |
+        sed -i '/runserver/d' ./run_local.sh
+        ./run_local.sh
+
+    - name: Start Django development server
+      run: |
+        nohup python manage.py runserver 0.0.0.0:8000 &
+
+    - name: Expose backend with Ngrok
+      uses: dmnemec/ngrok-tunnel-action@v2
+      with:
+        port: 8000
+        protocol: http
+
+    - name: Sleep to keep the job alive (10 minutes)
+      run: sleep 600

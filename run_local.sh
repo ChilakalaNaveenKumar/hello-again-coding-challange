@@ -35,8 +35,10 @@ else
   echo "Data already exists ($DATA_COUNT records). Skipping generation."
 fi
 
-echo "Starting development server"
-python manage.py runserver &
+if [ "$CI" != "true" ]; then
+  echo "Starting development server"
+  python manage.py runserver &
+fi
 
 # Move to frontend project and start Vite dev server
 echo "Switching to frontend dashboard"
