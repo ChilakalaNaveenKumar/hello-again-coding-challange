@@ -43,7 +43,7 @@ jobs:
 
     - name: Create Cloudflare Tunnel config
       run: |
-        echo 'tunnel: hello-again-backend' > config.yml
+        echo 'tunnel: c38e0a6f-1e13-40ba-958e-913e1c2c4a50' > config.yml
         echo 'credentials-file: ./tunnel.json' >> config.yml
         echo 'ingress:' >> config.yml
         echo '  - hostname: api.digi-setu.com' >> config.yml
