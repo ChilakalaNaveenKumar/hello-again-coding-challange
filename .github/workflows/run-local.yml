@@ -20,20 +20,30 @@ jobs:
     - name: Make script executable
       run: chmod +x ./run_local.sh
 
-    - name: Run backend setup (without starting server)
-      run: |
-        sed -i '/runserver/d' ./run_local.sh
-        ./run_local.sh
+    - name: Remove runserver from script
+      run: sed -i '/runserver/d' ./run_local.sh
+
+    - name: Run backend setup
+      run: ./run_local.sh
 
     - name: Start Django development server
+      run: nohup python manage.py runserver 0.0.0.0:8000 &
+
+    - name: Download and setup Ngrok
       run: |
-        nohup python manage.py runserver 0.0.0.0:8000 &
+        curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+        echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+        sudo apt update && sudo apt install ngrok
 
-    - name: Expose backend with Ngrok
-      uses: dmnemec/ngrok-tunnel-action@v2
-      with:
-        port: 8000
-        protocol: http
+    - name: Start Ngrok tunnel
+      env:
+        NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+      run: |
+        ngrok config add-authtoken $NGROK_AUTHTOKEN
+        nohup ngrok http 8000 > ngrok.log &
+        sleep 5
+        echo "🔗 Public URL:"
+        curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url'
 
-    - name: Sleep to keep the job alive (10 minutes)
+    - name: Sleep to keep tunnel alive
       run: sleep 600
