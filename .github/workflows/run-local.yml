@@ -46,7 +46,7 @@ jobs:
         echo 'tunnel: hello-again-backend' > config.yml
         echo 'credentials-file: ./tunnel.json' >> config.yml
         echo 'ingress:' >> config.yml
-        echo '  - hostname: api.djangobackend.com' >> config.yml
+        echo '  - hostname: api.digi-setu.com' >> config.yml
         echo '    service: http://localhost:8000' >> config.yml
         echo '  - service: http_status:404' >> config.yml
 
@@ -54,7 +54,7 @@ jobs:
       run: |
         nohup cloudflared tunnel --config config.yml run hello-again-backend > tunnel.log 2>&1 &
         sleep 5
-        echo "Backend is now available at https://api.djangobackend.com"
+        echo "Backend is now available at https://api.digi-setu.com"
 
     - name: Keep workflow alive for testing
       run: |
