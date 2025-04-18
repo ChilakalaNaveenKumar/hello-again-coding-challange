@@ -7,6 +7,9 @@ on:
 jobs:
   run-local:
     runs-on: ubuntu-latest
+    env:
+      DEBUG: "True"
+      CI: "true"
 
     steps:
     - name: Checkout code
@@ -46,5 +49,5 @@ jobs:
         echo "🔗 Public URL:"
         curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url'
 
-    - name: Sleep to keep tunnel alive
-      run: sleep 600
+    # - name: Sleep to keep tunnel alive
+    #   run: sleep 100
