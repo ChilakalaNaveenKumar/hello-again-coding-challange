@@ -22,7 +22,6 @@ echo "Running migrations"
 python manage.py makemigrations
 python manage.py migrate
 
-
 export DJANGO_SETTINGS_MODULE=helloagaincrm.settings
 
 echo "Checking for existing Faker data"
@@ -35,12 +34,6 @@ else
   echo "Data already exists ($DATA_COUNT records). Skipping generation."
 fi
 
-if [ "$CI" != "true" ]; then
-  echo "Starting development server"
-  python manage.py runserver &
-fi
-
-# Move to frontend project and start Vite dev server
 echo "Switching to frontend dashboard"
 cd django_performance_dashboard || exit 1
 
@@ -57,6 +50,5 @@ fi
 echo "Installing frontend dependencies"
 npm install
 
-echo "Starting Vite development server"
-npm run dev
-
+echo "Starting Vite development server with --host"
+npm run dev -- --host

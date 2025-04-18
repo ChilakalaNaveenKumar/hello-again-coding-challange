@@ -20,10 +20,11 @@ jobs:
     - name: Make script executable
       run: chmod +x ./run_local.sh
 
-    - name: Remove runserver from script
+    # Optional: Clean up any old server refs if applicable
+    - name: Remove old runserver call if needed
       run: sed -i '/runserver/d' ./run_local.sh
 
-    - name: Run backend setup
+    - name: Run backend and frontend setup
       run: ./run_local.sh
 
     - name: Start Django development server
