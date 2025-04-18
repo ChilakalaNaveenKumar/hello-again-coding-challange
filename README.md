@@ -17,8 +17,8 @@ cd hello-again-coding-challange
 Use the provided script to setup the environment, populate data (if missing), and launch both servers:
 
 ```bash
-chmod +x run_all.sh
-./run_all.sh
+chmod +x run_local.sh
+./run_local.sh
 ```
 > Note It takes `20-30 min` to load `3 million data`, so please bear with it
 
