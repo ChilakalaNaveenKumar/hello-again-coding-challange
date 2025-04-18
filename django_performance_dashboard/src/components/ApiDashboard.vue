@@ -30,7 +30,7 @@ export default {
   },
   data() {
     return {
-      baseUrl: 'http://localhost:8000',
+      baseUrl: import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000',
       optimizedResultColumns: [
         'id', 'customer_id', 'first_name', 'last_name', 'gender',
         'address_city', 'address_country', 'points'
