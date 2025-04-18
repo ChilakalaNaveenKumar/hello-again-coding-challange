@@ -1,11 +1,11 @@
-name: Run Local Script and Expose with Ngrok
+name: Run Local Script and Expose Backend with Cloudflare Tunnel
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  run-local:
+  run-backend:
     runs-on: ubuntu-latest
     env:
       DEBUG: "True"
@@ -15,72 +15,47 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Python 3.13.3
+    - name: Set up Python 3.10
       uses: actions/setup-python@v4
       with:
-        python-version: 3.13.3
+        python-version: 3.10
 
     - name: Make script executable
       run: chmod +x ./run_local.sh
 
-    - name: Remove old runserver call if needed
+    - name: Remove runserver call if present
       run: sed -i '/runserver/d' ./run_local.sh
 
-    - name: Run backend and frontend setup
+    - name: Run backend setup
       run: ./run_local.sh
 
-    - name: Start Django development server (background)
+    - name: Start Django server in background
       run: nohup python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
 
-    - name: Kill anything on port 5173 (if running)
+    - name: Install Cloudflared
       run: |
-        PID=$(lsof -ti:5173 || true)
-        if [ -n "$PID" ]; then
-          echo "Killing process using 5173: $PID"
-          kill -9 $PID
-        else
-          echo "Port 5173 is already free"
-        fi
+        sudo apt update
+        sudo apt install -y cloudflared
 
-    - name: Start Vite frontend server on 5173
-      run: |
-        cd django_performance_dashboard
-        nohup npm run dev -- --host 0.0.0.0 --port 5173 > vite.log 2>&1 &
+    - name: Write tunnel credentials
+      run: echo "${{ secrets.CLOUDFLARED_CRED_JSON }}" > tunnel.json
 
-    - name: Download and setup Ngrok
+    - name: Create Cloudflare Tunnel config
       run: |
-        curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
-        echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
-        sudo apt update && sudo apt install ngrok
+        echo 'tunnel: hello-again-backend' > config.yml
+        echo 'credentials-file: ./tunnel.json' >> config.yml
+        echo 'ingress:' >> config.yml
+        echo '  - hostname: api.djangobackend.com' >> config.yml
+        echo '    service: http://localhost:8000' >> config.yml
+        echo '  - service: http_status:404' >> config.yml
 
-    - name: Start Ngrok tunnel for Vite (5173 only)
-      env:
-        NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+    - name: Start Cloudflare Tunnel
       run: |
-        ngrok config add-authtoken $NGROK_AUTHTOKEN
-        nohup ngrok http 5173 > ngrok-vite.log &
+        nohup cloudflared tunnel --config config.yml run hello-again-backend > tunnel.log 2>&1 &
         sleep 5
-        echo "🔗 Vite Public URL:"
-        curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url'
-    
-    - name: Start Django + expose via ngrok
-      env:
-        NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
-      run: |
-        nohup python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
-        ngrok config add-authtoken $NGROK_AUTHTOKEN
-        nohup ngrok http 8000 > ngrok-django.log &
-        sleep 5
-        DJANGO_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
-        echo "VITE_BACKEND_URL=$DJANGO_URL" > django_performance_dashboard/.env
-        echo "🔗 Django Ngrok URL: $DJANGO_URL"
+        echo "Backend is now available at https://api.djangobackend.com"
 
-    - name: Print vite.log
-      run: cat django_performance_dashboard/vite.log || echo "vite.log not found"
-
-    - name: Keep alive until manually cancelled
+    - name: Keep workflow alive for testing
       run: |
-        echo "Workflow is now live. Visit the ngrok URL in your browser."
-        echo "Cancel the workflow manually from the Actions tab when done."
+        echo "Cloudflare Tunnel live. Cancel manually when done."
         while true; do sleep 30; done
-    

@@ -65,5 +65,7 @@ fi
 echo "Installing frontend dependencies"
 npm install
 
-echo "Starting Vite development server in background"
-nohup npm run dev -- --host 0.0.0.0 --port 5173 > vite.log 2>&1 &
+if [ "$CI" != "true" ]; then
+  echo "Starting Vite development server in background"
+  nohup npm run dev -- --host 0.0.0.0 --port 5173 > vite.log 2>&1 &
+fi

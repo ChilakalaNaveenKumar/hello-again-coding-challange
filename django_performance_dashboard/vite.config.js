@@ -8,6 +8,10 @@ export default defineConfig({
     vue(),
     tailwindcss()
   ],
+  base: '/hello-again-coding-challange/',
+  build: {
+    outDir: 'dist'
+  },
   server: {
     proxy: {
       '/api': {
