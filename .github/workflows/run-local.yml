@@ -31,6 +31,14 @@ jobs:
 
     - name: Start Django development server
       run: nohup python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
+    
+    - name: Kill anything on port 5173
+      run: |
+        PID=$(lsof -ti:5173)
+        if [ -n "$PID" ]; then
+          echo "Killing process using 5173: $PID"
+          kill -9 $PID
+        fi
 
     - name: Start Vite frontend server
       run: |
