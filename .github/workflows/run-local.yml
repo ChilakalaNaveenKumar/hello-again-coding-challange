@@ -54,9 +54,11 @@ jobs:
       run: |
         nohup cloudflared tunnel --config config.yml run hello-again-backend > tunnel.log 2>&1 &
         sleep 5
-        echo "Backend is now available at https://api.digi-setu.com"
+        echo "✅ Backend exposed at https://api.digi-setu.com"
+        echo "🪵 Tunnel logs:"
+        cat tunnel.log || echo "No logs found"
 
     - name: Keep workflow alive for testing
       run: |
-        echo "Cloudflare Tunnel live. Cancel manually when done."
+        echo "🌐 Cloudflare Tunnel live. Cancel manually when done."
         while true; do sleep 30; done
