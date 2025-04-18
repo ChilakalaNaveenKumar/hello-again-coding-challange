@@ -30,7 +30,7 @@ export default {
   },
   data() {
     return {
-      baseUrl: 'http://127.0.0.1:8000',
+      baseUrl: 'http://localhost:8000',
       optimizedResultColumns: [
         'id', 'customer_id', 'first_name', 'last_name', 'gender',
         'address_city', 'address_country', 'points'
