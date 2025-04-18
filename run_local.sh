@@ -37,12 +37,12 @@ export DJANGO_SETTINGS_MODULE=helloagaincrm.settings
 echo "Checking for existing Faker data"
 DATA_COUNT=$(python -W ignore -c "import django; django.setup(); from crm.models import AppUser; print(AppUser.objects.count())")
 
-# if [ "${DATA_COUNT:-0}" -eq "0" ]; then
-#   echo "No data found. Generating sample data"
-#   python manage.py generate_data
-# else
-#   echo "Data already exists ($DATA_COUNT records). Skipping generation."
-# fi
+if [ "${DATA_COUNT:-0}" -eq "0" ]; then
+  echo "No data found. Generating sample data"
+  python manage.py generate_data
+else
+  echo "Data already exists ($DATA_COUNT records). Skipping generation."
+fi
 
 if [ "$CI" != "true" ]; then
   echo "Starting development server"
