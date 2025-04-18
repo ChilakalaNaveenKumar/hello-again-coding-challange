@@ -66,5 +66,9 @@ jobs:
     - name: Print vite.log
       run: cat django_performance_dashboard/vite.log || echo "vite.log not found"
 
-    - name: Sleep to keep tunnel alive
-      run: sleep 600
+    - name: Keep alive until manually cancelled
+      run: |
+        echo "Workflow is now live. Visit the ngrok URL in your browser."
+        echo "Cancel the workflow manually from the Actions tab when done."
+        while true; do sleep 30; done
+    
