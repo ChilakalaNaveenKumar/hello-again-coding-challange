@@ -23,7 +23,6 @@ jobs:
     - name: Make script executable
       run: chmod +x ./run_local.sh
 
-    # Optional: Clean up any old server refs if applicable
     - name: Remove old runserver call if needed
       run: sed -i '/runserver/d' ./run_local.sh
 
@@ -31,7 +30,12 @@ jobs:
       run: ./run_local.sh
 
     - name: Start Django development server
-      run: nohup python manage.py runserver 0.0.0.0:8000 &
+      run: nohup python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
+
+    - name: Start Vite frontend server
+      run: |
+        cd django_performance_dashboard
+        nohup npm run dev -- --host 0.0.0.0 --port 5173 > vite.log 2>&1 &
 
     - name: Download and setup Ngrok
       run: |
@@ -39,15 +43,21 @@ jobs:
         echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
         sudo apt update && sudo apt install ngrok
 
-    - name: Start Ngrok tunnel
+    - name: Start Ngrok tunnels for Django and Vite
       env:
         NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
       run: |
         ngrok config add-authtoken $NGROK_AUTHTOKEN
-        nohup ngrok http 8000 > ngrok.log &
+        nohup ngrok http 8000 > ngrok-django.log &
+        nohup ngrok http 5173 > ngrok-vite.log &
         sleep 5
-        echo "🔗 Public URL:"
-        curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url'
+        echo "🔗 Django Public URL:"
+        curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[] | select(.config.addr=="http://localhost:8000") | .public_url'
+        echo "🔗 Vite Public URL:"
+        curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[] | select(.config.addr=="http://localhost:5173") | .public_url'
 
-    # - name: Sleep to keep tunnel alive
-    #   run: sleep 100
+    - name: Print vite.log
+      run: cat django_performance_dashboard/vite.log || echo "vite.log not found"
+
+    - name: Sleep to keep tunnel alive
+      run: sleep 600
