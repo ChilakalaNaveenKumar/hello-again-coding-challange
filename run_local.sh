@@ -1,4 +1,14 @@
 #!/bin/bash
+echo "Checking if port 5173 is already in use..."
+PID=$(lsof -ti:5173)
+if [ -n "$PID" ]; then
+  echo "Port 5173 in use. Killing process $PID..."
+  kill -9 $PID
+  sleep 1
+else
+  echo "Port 5173 is free."
+fi
+
 echo "Checking if port 8000 is already in use..."
 PID=$(lsof -ti:8000)
 
