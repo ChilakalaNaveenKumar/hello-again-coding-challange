@@ -40,7 +40,10 @@ jobs:
 
     - name: Write tunnel credentials safely
       run: |
-        echo "${{ secrets.CLOUDFLARED_CRED_JSON }}" | jq '.' > tunnel.json
+          cat <<EOF > tunnel.json
+          ${{ secrets.CLOUDFLARED_CRED_JSON }}
+          EOF
+      
 
     - name: Create Cloudflare Tunnel config
       run: |
