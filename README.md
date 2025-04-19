@@ -4,6 +4,9 @@
 
 This project compares optimized vs unoptimized Django REST API queries with a Vue.js dashboard visualizing their performance.
 
+## Live Demo
+Frontend: https://chilakalanaveenkumar.github.io/hello-again-coding-challange/
+
 ## Getting Started
 
 ### 1. Clone the project
